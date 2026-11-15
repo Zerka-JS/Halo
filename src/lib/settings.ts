@@ -342,7 +342,7 @@ export const getSettings = () => state;
 export function useSettings(): Settings;
 export function useSettings<T>(select: (s: Settings) => T): T;
 export function useSettings<T>(select?: (s: Settings) => T): Settings | T {
-  return useSyncExternalStore(subscribe, select ? () => select(state) : () => state);
+  return useSyncExternalStore<Settings | T>(subscribe, select ? () => select(state) : () => state);
 }
 
 let flushT = 0, fileT = 0;
