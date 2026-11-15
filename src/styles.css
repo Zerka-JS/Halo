@@ -1,0 +1,282 @@
+@import "tailwindcss";
+@import "@fontsource-variable/inter";
+
+/* ── Thème sombre (par défaut) ── */
+:root, :root[data-theme="dark"] {
+  --ink: #0e0f10;
+  --glass-rgb: 58 64 68;
+  --glass-strong-rgb: 44 49 53;
+  --stroke-rgb: 255 255 255;
+  --stroke-a: 0.10;
+  --stroke-strong-a: 0.18;
+  --shadow-a: 0.35;
+  --text: #f1e6d2;
+  --text-dim: rgba(241, 230, 210, 0.62);
+  --surface: #131517;
+  --surface-2: #1b1e21;
+  --surface-3: #25292d;
+  --shadow-hl: 0.06;
+  color-scheme: dark;
+}
+/* ── Thème clair ── */
+:root[data-theme="light"] {
+  --ink: #ffffff;
+  --glass-rgb: 255 255 255;
+  --glass-strong-rgb: 250 250 252;
+  --stroke-rgb: 0 0 0;
+  --stroke-a: 0.08;
+  --stroke-strong-a: 0.16;
+  --shadow-a: 0.15;
+  --text: #1d1d1f;
+  --text-dim: rgba(29, 29, 31, 0.60);
+  --surface: #f2f2f4;
+  --surface-2: #ffffff;
+  --surface-3: #e8e8ec;
+  --shadow-hl: 0.7;
+  color-scheme: light;
+}
+/* ── Contraste renforcé (Réglages › Apparence › Accessibilité) ── */
+:root[data-contrast="1"][data-theme] {
+  --stroke-a: 0.38;
+  --stroke-strong-a: 0.62;
+  --text-dim: color-mix(in srgb, var(--text) 90%, transparent);
+}
+/* Valeurs réglables depuis le panneau Réglages (écrites en ligne sur <html> par useApplyTheme) */
+:root {
+  --accent: #e5484d;
+  --accent-fg: #ffffff;
+  --glass-a: 0.52;
+  --glass-strong-a: 0.78;
+  --blur: 28px;
+  --radius: 18px;
+  --glass-sat: 140%;
+  --border-k: 1;
+  --shadow-k: 1;
+  --speed: 1;
+  --tip-delay: 0ms;
+  --stroke: rgb(var(--stroke-rgb) / calc(var(--stroke-a) * var(--border-k)));
+  --stroke-strong: rgb(var(--stroke-rgb) / calc(var(--stroke-strong-a) * var(--border-k)));
+  --shadow: 0 10px 40px rgb(0 0 0 / calc(var(--shadow-a) * var(--shadow-k))), 0 1px 0 rgb(255 255 255 / var(--shadow-hl)) inset;
+  --glass: rgb(var(--glass-rgb) / var(--glass-a));
+  --glass-strong: rgb(var(--glass-strong-rgb) / var(--glass-strong-a));
+}
+
+html, body, #root { height: 100%; margin: 0; background: transparent; overflow: hidden; }
+body { font-family: var(--font, "Inter Variable", system-ui, sans-serif); color: var(--text); user-select: none; -webkit-font-smoothing: antialiased; }
+/* La fenêtre Réglages est opaque (les autres fenêtres sont transparentes) */
+html[data-w="settings"], html[data-w="settings"] body, html[data-w="settings"] #root { background: var(--surface); }
+
+.glass {
+  background: var(--glass);
+  backdrop-filter: blur(var(--blur)) saturate(var(--glass-sat));
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(var(--glass-sat));
+  border: 1px solid var(--stroke);
+  box-shadow: var(--shadow);
+  /* Les changements de verre (curseurs, thème) glissent au lieu de sauter */
+  transition: background-color calc(.14s / var(--speed)) ease-out, border-color calc(.14s / var(--speed)) ease-out;
+}
+.glass-strong { background: var(--glass-strong); }
+/* Barre du haut, dock et recherche sont des fenêtres transparentes : derrière elles il n'y a rien que le navigateur puisse flouter
+   (le bureau Windows n'est pas accessible à backdrop-filter). On évite donc ce calcul GPU inutile, surtout pendant le zoom du dock.
+   Le flou reste actif là où il se voit : widgets du bureau et aperçus des Réglages. */
+html[data-w="topbar"] .glass, html[data-w="dock"] .glass, html[data-w="search"] .glass { backdrop-filter: none; -webkit-backdrop-filter: none; }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+/* Niveaux d'animation (Réglages › Animations) */
+[data-motion="off"] *, [data-motion="off"] *::before, [data-motion="off"] *::after { transition: none !important; animation: none !important; }
+[data-motion="reduced"] .halo-blob, [data-motion="reduced"] .np-eq i, [data-motion="reduced"] .halo-pop, [data-motion="reduced"] .np-fade { animation: none !important; }
+/* Mode économie : pas de fusion de calques (coûteuse pour le GPU) */
+[data-perf="economy"] .halo-blob { mix-blend-mode: normal; opacity: .55; }
+[data-perf="economy"] .np-art-bg { filter: blur(24px); }
+
+.mono-dim { color: var(--text-dim); }
+
+html, body { cursor: default; overscroll-behavior: none; }
+img, canvas, svg { -webkit-user-drag: none; user-select: none; }
+::-webkit-scrollbar { display: none; }
+.scroll-y { overflow-y: auto; overscroll-behavior: contain; scroll-behavior: smooth; }
+.scroll-y::-webkit-scrollbar { display: block; width: 8px; }
+.scroll-y::-webkit-scrollbar-thumb { background: var(--stroke-strong); border-radius: 8px; border: 2px solid transparent; background-clip: padding-box; }
+
+/* ── Curseurs ── */
+.halo-range {
+  -webkit-appearance: none; appearance: none; height: 4px; border-radius: 99px; outline: none; cursor: pointer;
+  background: linear-gradient(to right, var(--accent) var(--p, 50%), var(--stroke-strong) var(--p, 50%));
+}
+.halo-range::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 50%;
+  background: #fff; border: 1px solid rgba(0, 0, 0, 0.25); box-shadow: 0 1px 5px rgba(0, 0, 0, 0.45);
+}
+.halo-range.light-thumb::-webkit-slider-thumb { width: 12px; height: 12px; }
+
+/* ── Fonds animés (blobs) ── */
+.halo-blob { position: absolute; border-radius: 50%; mix-blend-mode: screen; opacity: 0.8; will-change: transform; }
+@keyframes halo-a { 0%, 100% { transform: translate3d(0, 0, 0) scale(1); } 50% { transform: translate3d(9%, 7%, 0) scale(1.14); } }
+@keyframes halo-b { 0%, 100% { transform: translate3d(0, 0, 0) scale(1.05); } 50% { transform: translate3d(-10%, 9%, 0) scale(0.92); } }
+@keyframes halo-c { 0%, 100% { transform: translate3d(0, 0, 0) scale(1); } 50% { transform: translate3d(7%, -9%, 0) scale(1.1); } }
+@keyframes halo-d { 0%, 100% { transform: translate3d(0, 0, 0) scale(0.95); } 50% { transform: translate3d(-9%, -6%, 0) scale(1.12); } }
+.halo-anim .halo-blob.a { animation: halo-a calc(26s / var(--wp-speed, 1)) ease-in-out infinite; }
+.halo-anim .halo-blob.b { animation: halo-b calc(32s / var(--wp-speed, 1)) ease-in-out infinite; }
+.halo-anim .halo-blob.c { animation: halo-c calc(38s / var(--wp-speed, 1)) ease-in-out infinite; }
+.halo-anim .halo-blob.d { animation: halo-d calc(29s / var(--wp-speed, 1)) ease-in-out infinite; }
+
+/* ── Widgets en mode édition ── */
+.widget-edit { outline: 1.5px dashed color-mix(in srgb, var(--accent) 80%, white); outline-offset: 6px; border-radius: calc(var(--radius) + 4px); }
+@keyframes halo-pop { from { opacity: 0; transform: scale(0.94) translateY(6px); } to { opacity: 1; transform: none; } }
+.halo-pop { animation: halo-pop calc(0.2s / var(--speed)) cubic-bezier(.2, .8, .2, 1); }
+
+/* ── Widget « En lecture » adaptatif : les couleurs viennent de la pochette ── */
+@property --pc1 { syntax: "<color>"; inherits: true; initial-value: #3a3f44; }
+@property --pc2 { syntax: "<color>"; inherits: true; initial-value: #1c1e21; }
+@property --pc3 { syntax: "<color>"; inherits: true; initial-value: #2e3236; }
+@property --pac { syntax: "<color>"; inherits: true; initial-value: #1db954; }
+@property --pfg { syntax: "<color>"; inherits: true; initial-value: #111214; }
+.np-card {
+  background:
+    radial-gradient(120% 95% at 0% 0%, var(--pc1), transparent 62%),
+    radial-gradient(110% 100% at 100% 100%, var(--pc3), transparent 66%),
+    var(--pc2);
+  transition: --pc1 .9s ease, --pc2 .9s ease, --pc3 .9s ease, --pac .9s ease, --pfg .9s ease;
+}
+/* Pochette floutée en arrière-plan (reprend les couleurs réelles de l'image) */
+.np-art-bg { position: absolute; inset: -30%; background-size: cover; background-position: center; filter: blur(38px) saturate(1.5); opacity: .38; }
+.np-fade { animation: np-fade calc(.55s / var(--speed)) cubic-bezier(.2, .8, .2, 1); }
+@keyframes np-fade { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: none; } }
+
+/* Égaliseur : bouge pendant la lecture, repose en pause */
+.np-eq { display: inline-flex; align-items: flex-end; gap: 2px; height: 12px; }
+.np-eq i { width: 2.5px; height: 28%; border-radius: 2px; background: var(--pac); transition: height .3s ease; }
+.np-eq[data-on="1"] i { animation: np-eq 1s ease-in-out infinite; }
+.np-eq i:nth-child(2) { animation-delay: -.35s !important; }
+.np-eq i:nth-child(3) { animation-delay: -.7s !important; }
+.np-eq i:nth-child(4) { animation-delay: -.15s !important; }
+@keyframes np-eq { 0%, 100% { height: 22%; } 50% { height: 100%; } }
+
+/* Barre de progression */
+.np-bar { height: 16px; display: flex; align-items: center; cursor: pointer; }
+.np-bar-track { position: relative; width: 100%; height: 5px; border-radius: 99px; background: rgba(255, 255, 255, .2); }
+.np-bar-fill { position: relative; height: 100%; border-radius: inherit; background: var(--pac); transition: width .5s linear; }
+.np-bar-fill::after {
+  content: ""; position: absolute; right: -5px; top: 50%; width: 10px; height: 10px; margin-top: -5px; border-radius: 50%;
+  background: var(--pac); opacity: 0; transform: scale(.6); transition: opacity .15s, transform .15s;
+}
+.np-bar:hover .np-bar-fill::after { opacity: 1; transform: none; }
+
+/* Boutons */
+.np-ghost { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; opacity: .92; transition: background .15s, transform .15s; }
+.np-ghost:hover { background: rgba(255, 255, 255, .14); }
+.np-ghost:active { transform: scale(.9); }
+.np-play {
+  width: 54px; height: 54px; display: flex; align-items: center; justify-content: center; border-radius: 50%;
+  background: var(--pac); color: var(--pfg); box-shadow: 0 6px 20px color-mix(in srgb, var(--pac) 45%, transparent);
+  transition: transform .15s;
+}
+.np-play:hover { transform: scale(1.06); }
+.np-play:active { transform: scale(.94); }
+
+/* ── Fondu à l'apparition d'un fond d'écran ── */
+@keyframes halo-wp-in { from { opacity: 0; } to { opacity: 1; } }
+.halo-wp-in { animation: halo-wp-in calc(.7s / var(--speed)) ease-out both; }
+
+/* ── Infobulles du dock (délai réglable) ── */
+.dock-tip { opacity: 0; transition: opacity calc(.12s / var(--speed)) ease-out; }
+.group:hover .dock-tip { opacity: 1; transition-delay: var(--tip-delay); }
+
+/* ── Réglages : sections hors écran non calculées (pages longues plus fluides) ── */
+.halo-sec { content-visibility: auto; contain-intrinsic-size: auto 260px; }
+/* Réglage retrouvé via la recherche : clignotement discret */
+@keyframes halo-flash { 0%, 100% { background-color: transparent; } 25%, 60% { background-color: color-mix(in srgb, var(--accent) 24%, transparent); } }
+.halo-flash { animation: halo-flash 1.7s ease-out; }
+.halo-press { transition: transform .12s ease-out, opacity .15s, background-color .15s; }
+.halo-press:active:not(:disabled) { transform: scale(.96); }
+
+/* ── Réglages : transitions plus douces ── */
+.halo-range::-webkit-slider-thumb { transition: transform .12s ease-out; }
+.halo-range:active::-webkit-slider-thumb { transform: scale(1.18); }
+.halo-switch-knob { transition: left calc(.22s / var(--speed)) cubic-bezier(.3, 1.4, .5, 1); }
+
+/* ── Spotify « île » : pastille (égaliseur · heure · pochette) qui s'agrandit en lecteur au clic ── */
+.isl {
+  --isl-w: 236px; --isl-cw: 380px;
+  position: relative; overflow: hidden; color: #fff; background: #0a0a0b;
+  width: var(--isl-w); height: 40px; border-radius: 20px; cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, .07);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, .5), 0 1px 0 rgba(255, 255, 255, .05) inset;
+  transition:
+    width calc(.55s / var(--speed)) cubic-bezier(.34, 1.32, .64, 1),
+    height calc(.55s / var(--speed)) cubic-bezier(.34, 1.32, .64, 1),
+    border-radius calc(.5s / var(--speed)) cubic-bezier(.34, 1.2, .64, 1);
+}
+.isl[data-open="1"] { width: var(--isl-cw); height: var(--isl-h, 134px); border-radius: 30px; cursor: default; }
+.isl:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+[data-motion="reduced"] .isl { transition-timing-function: ease-out; }
+
+/* Deux calques superposés (largeur fixe, centrés) : seule la boîte change de taille, le texte ne se réorganise pas */
+.isl-layer {
+  position: absolute; top: 0; left: 50%; box-sizing: border-box;
+  transition: opacity calc(.24s / var(--speed)) ease, transform calc(.4s / var(--speed)) cubic-bezier(.2, .8, .2, 1), filter calc(.3s / var(--speed)) ease;
+}
+.isl-compact { width: var(--isl-w); height: 40px; margin-left: calc(var(--isl-w) / -2); display: flex; align-items: center; gap: 10px; padding: 0 9px 0 14px; }
+.isl-full { width: var(--isl-cw); height: var(--isl-h, 134px); margin-left: calc(var(--isl-cw) / -2); padding: 14px; display: flex; flex-direction: column; gap: 8px; justify-content: center;
+  opacity: 0; transform: scale(.9); filter: blur(7px); pointer-events: none; }
+.isl[data-open="1"] .isl-full { opacity: 1; transform: none; filter: none; pointer-events: auto; transition-delay: calc(.1s / var(--speed)), calc(.1s / var(--speed)), calc(.1s / var(--speed)); }
+.isl[data-open="1"] .isl-compact { opacity: 0; transform: scale(.88); filter: blur(7px); pointer-events: none; transition-delay: 0s; }
+[data-perf="economy"] .isl-layer { filter: none !important; }
+
+/* Égaliseur à 5 barres : bouge pendant la lecture, repose en pause */
+.isl-eq { display: inline-flex; align-items: center; justify-content: center; gap: 2.5px; height: 16px; flex: none; }
+.isl-eq i { width: 3px; height: 100%; border-radius: 2px; background: var(--isl-ac, #fff); transform: scaleY(.22); transition: background .6s ease, transform .3s ease; }
+.isl-eq[data-on="1"] i { animation: isl-eq .9s ease-in-out infinite; }
+.isl-eq i:nth-child(1) { animation-duration: .85s !important; animation-delay: -.2s !important; }
+.isl-eq i:nth-child(2) { animation-duration: 1.1s !important; animation-delay: -.6s !important; }
+.isl-eq i:nth-child(3) { animation-duration: .75s !important; animation-delay: -.05s !important; }
+.isl-eq i:nth-child(4) { animation-duration: 1s !important; animation-delay: -.45s !important; }
+.isl-eq i:nth-child(5) { animation-duration: .9s !important; animation-delay: -.8s !important; }
+@keyframes isl-eq { 0%, 100% { transform: scaleY(.22); } 50% { transform: scaleY(1); } }
+[data-motion="reduced"] .isl-eq i { animation: none !important; }
+
+/* Centre de la pastille : heure, et titre du morceau quelques secondes quand une musique est détectée */
+.isl-mid { flex: 1; min-width: 0; display: grid; text-align: center; }
+.isl-time { grid-area: 1 / 1; font-size: 14px; font-weight: 700; letter-spacing: .01em; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: opacity .3s ease, transform .35s cubic-bezier(.2, .8, .2, 1); }
+.isl-peek { opacity: 0; transform: translateY(8px); }
+.isl-mid[data-peek="1"] .isl-time:not(.isl-peek) { opacity: 0; transform: translateY(-8px); }
+.isl-mid[data-peek="1"] .isl-peek { opacity: 1; transform: none; }
+.isl-mini { width: 24px; height: 24px; flex: none; border-radius: 8px; object-fit: cover; }
+.isl-mini-ico { display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, .1); opacity: .8; }
+
+/* Grande version */
+.isl-top { display: flex; gap: 12px; align-items: stretch; }
+.isl-cover { width: 80px; height: 80px; flex: none; border-radius: 16px; overflow: hidden; background: rgba(255, 255, 255, .09); display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 16px rgba(0, 0, 0, .45); }
+.isl-cover img { width: 100%; height: 100%; object-fit: cover; }
+.isl-col { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: space-between; }
+.isl-head { display: flex; align-items: flex-start; gap: 10px; }
+.isl-text { flex: 1; min-width: 0; }
+.isl-head .isl-eq { margin-top: 2px; }
+.isl-title { font-size: 15px; font-weight: 700; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.isl-artist { font-size: 12px; line-height: 1.3; color: rgba(255, 255, 255, .6); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.isl-ctl { display: flex; align-items: center; justify-content: space-between; padding: 0 14px; margin-top: 4px; }
+.isl-btn { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; color: #fff; opacity: .92; transition: background .15s, transform .15s; }
+.isl-btn:hover { background: rgba(255, 255, 255, .13); }
+.isl-btn:active { transform: scale(.88); }
+.isl-btn-main { width: 46px; height: 46px; opacity: 1; }
+.isl-play-ico { margin-left: 2px; }
+
+/* Barre : trait fin + pastille épaisse pour la partie écoulée */
+.isl-prog { display: flex; align-items: center; gap: 8px; height: 18px; }
+.isl-clock { width: 32px; flex: none; font-size: 10px; color: rgba(255, 255, 255, .55); font-variant-numeric: tabular-nums; }
+.isl-bar { flex: 1; height: 18px; display: flex; align-items: center; cursor: pointer; }
+.isl-track { position: relative; width: 100%; height: 4px; border-radius: 99px; background: rgba(255, 255, 255, .16); }
+.isl-fill { position: absolute; left: 0; top: 50%; height: 9px; min-width: 9px; max-width: 100%; transform: translateY(-50%); border-radius: 99px; background: var(--isl-ac, #fff); transition: width .5s linear, background .6s ease; }
+.isl-vol { width: 26px; height: 26px; flex: none; display: flex; align-items: center; justify-content: center; border-radius: 50%; color: rgba(255, 255, 255, .7); transition: background .15s, color .15s; }
+.isl-vol:hover { background: rgba(255, 255, 255, .13); color: #fff; }
+
+/* Rien en lecture */
+.isl-idle { display: flex; align-items: center; gap: 12px; }
+.isl-idle-ico { width: 46px; height: 46px; flex: none; border-radius: 14px; background: rgba(255, 255, 255, .09); display: flex; align-items: center; justify-content: center; }
+.isl-idle-txt { flex: 1; min-width: 0; }
+.isl-open { height: 32px; flex: none; display: flex; align-items: center; gap: 6px; padding: 0 13px; border-radius: 99px; font-size: 11px; font-weight: 700; color: #000; transition: transform .15s; }
+.isl-open:hover { transform: scale(1.05); }
+.isl-open:active { transform: scale(.95); }
+
+/* L'île ouverte passe devant les autres widgets qu'elle recouvre */
+.halo-wframe:has(.isl[data-open="1"]) { z-index: 15 !important; }

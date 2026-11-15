@@ -1,0 +1,117 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Halo",
+  "version": "0.1.0",
+  "identifier": "dev.halo.desktop",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "desktop",
+        "url": "index.html?w=desktop",
+        "title": "Halo Bureau",
+        "decorations": false,
+        "resizable": false,
+        "skipTaskbar": true,
+        "shadow": false,
+        "alwaysOnBottom": true,
+        "visible": false,
+        "focus": false
+      },
+      {
+        "label": "topbar",
+        "url": "index.html?w=topbar",
+        "title": "Halo Barre",
+        "decorations": false,
+        "resizable": false,
+        "skipTaskbar": true,
+        "shadow": false,
+        "transparent": true,
+        "alwaysOnTop": true,
+        "visible": false,
+        "focus": false,
+        "width": 1200,
+        "height": 32
+      },
+      {
+        "label": "dock",
+        "url": "index.html?w=dock",
+        "title": "Halo Dock",
+        "decorations": false,
+        "resizable": false,
+        "skipTaskbar": true,
+        "shadow": false,
+        "transparent": true,
+        "alwaysOnTop": true,
+        "visible": false,
+        "focus": false,
+        "width": 720,
+        "height": 150
+      },
+      {
+        "label": "settings",
+        "url": "index.html?w=settings",
+        "title": "Réglages Halo",
+        "decorations": false,
+        "resizable": true,
+        "minWidth": 780,
+        "minHeight": 520,
+        "width": 1040,
+        "height": 700,
+        "center": true,
+        "shadow": true,
+        "visible": false,
+        "focus": false
+      },
+      {
+        "label": "search",
+        "url": "index.html?w=search",
+        "title": "Halo Recherche",
+        "decorations": false,
+        "resizable": false,
+        "skipTaskbar": true,
+        "shadow": false,
+        "transparent": true,
+        "alwaysOnTop": true,
+        "visible": false,
+        "focus": false,
+        "width": 640,
+        "height": 480
+      }
+    ],
+    "security": {
+      "csp": null,
+      "assetProtocol": {
+        "enable": true,
+        "scope": [
+          "$APPCONFIG/wallpapers/**"
+        ]
+      }
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      "nsis",
+      "deb",
+      "appimage"
+    ],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/icon.ico"
+    ],
+    "linux": {
+      "deb": {
+        "depends": [
+          "x11-utils"
+        ]
+      }
+    }
+  }
+}

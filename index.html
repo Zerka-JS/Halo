@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Halo</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      // Filet de sécurité : si le programme ne s'affiche pas (erreur de chargement, serveur de dev injoignable), on le dit à l'écran au lieu d'un écran blanc.
+      (function () {
+        var msgs = [];
+        function show(extra) {
+          var r = document.getElementById("root");
+          if (r && r.childNodes.length) return;
+          var d = document.getElementById("halo-boot-error");
+          if (!d) {
+            d = document.createElement("pre");
+            d.id = "halo-boot-error";
+            d.style.cssText = "position:fixed;inset:0;margin:0;padding:16px;white-space:pre-wrap;word-break:break-word;background:#0e0f10;color:#f1e6d2;font:12px/1.5 system-ui,sans-serif;user-select:text;z-index:99999;overflow:auto";
+            document.body.appendChild(d);
+          }
+          d.textContent = "Halo n'a pas pu s'afficher.\n\n" + (msgs.join("\n") || extra || "");
+        }
+        window.addEventListener("error", function (e) { msgs.push(String(e.message || (e.target && e.target.src ? "chargement impossible : " + e.target.src : "erreur"))); setTimeout(show, 600); }, true);
+        window.addEventListener("unhandledrejection", function (e) { msgs.push(String(e.reason)); setTimeout(show, 600); });
+        setTimeout(function () { show("Aucun contenu après 12 s. Si tu lances « npm run tauri dev » : ferme tout (taskkill /F /IM halo-desktop.exe et le terminal de développement), vérifie que rien n'utilise le port 1420, puis relance."); }, 12000);
+      })();
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "windows": [
+    "desktop",
+    "topbar",
+    "dock",
+    "desktop-*",
+    "topbar-*",
+    "dock-*",
+    "settings",
+    "search"
+  ],
+  "permissions": [
+    "core:default",
+    "core:window:allow-start-dragging",
+    "global-shortcut:allow-register",
+    "global-shortcut:allow-unregister",
+    "autostart:allow-enable",
+    "autostart:allow-disable",
+    "autostart:allow-is-enabled"
+  ]
+}
